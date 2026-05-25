@@ -38,7 +38,7 @@ export default function LoginPage() {
             返回首页
           </button>
           <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-2xl flex items-center justify-center shadow-lg text-3xl">
-            🐶
+            🐕
           </div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">欢迎回来</h1>
           <p className="text-[var(--text-secondary)] mt-2">登录您的宠物互助社区账号</p>

@@ -119,7 +119,7 @@ export default function Home() {
             <div className="relative">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1518717758536-85ae2900431f?w=1200&h=800&fit=crop"
+                  src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=800&fit=crop"
                   alt="可爱柯基"
                   className="w-full h-80 lg:h-[500px] object-cover"
                 />
