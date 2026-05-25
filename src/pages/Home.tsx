@@ -119,8 +119,8 @@ export default function Home() {
             <div className="relative">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&h=800&fit=crop"
-                  alt="宠物乐园"
+                  src="https://images.unsplash.com/photo-1518717758536-85ae2900431f?w=1200&h=800&fit=crop"
+                  alt="可爱柯基"
                   className="w-full h-80 lg:h-[500px] object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />

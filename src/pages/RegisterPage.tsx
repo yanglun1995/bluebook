@@ -53,8 +53,8 @@ export default function RegisterPage() {
             <ArrowLeft className="w-5 h-5" />
             返回首页
           </button>
-          <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-2xl flex items-center justify-center shadow-lg">
-            <PawPrint className="w-8 h-8 text-white" />
+          <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-2xl flex items-center justify-center shadow-lg text-3xl">
+            🐶
           </div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">创建账号</h1>
           <p className="text-[var(--text-secondary)] mt-2">加入宠物互助社区，与爱宠人士分享快乐</p>

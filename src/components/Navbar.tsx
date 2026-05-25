@@ -35,8 +35,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="w-10 h-10 bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-xl flex items-center justify-center shadow-md">
-              <PawPrint className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-xl flex items-center justify-center shadow-md text-xl">
+              🐶
             </div>
             <span className="text-xl font-bold text-[var(--text-primary)] hidden sm:block">宠物互助社区</span>
           </div>
