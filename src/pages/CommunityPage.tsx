@@ -33,6 +33,7 @@ export default function CommunityPage() {
       category: newPost.category,
       created_at: new Date().toISOString(),
       likes: 0,
+      comments: 0,
       user: currentUser,
     };
     addPost(post);

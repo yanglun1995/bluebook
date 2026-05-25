@@ -9,30 +9,40 @@ interface ServiceCardProps {
 export default function ServiceCard({ service }: ServiceCardProps) {
   const navigate = useNavigate();
 
-  const serviceTypeColors: Record<string, string> = {
-    '遛狗': 'bg-green-100 text-green-600',
-    '喂养': 'bg-blue-100 text-blue-600',
-    '美容': 'bg-purple-100 text-purple-600',
-    '寄养': 'bg-orange-100 text-orange-600',
+  const getTypeIcon = (type: string) => {
+    const icons: Record<string, string> = {
+      '遛狗': '🐕',
+      '喂养': '🍖',
+      '美容': '💅',
+      '寄养': '🏠',
+      '陪伴': '❤️',
+    };
+    return icons[type] || '🐾';
   };
 
   return (
-    <div className="card overflow-hidden cursor-pointer" onClick={() => navigate(`/help/${service.id}`)}>
-      <div className="relative h-40">
+    <div 
+      className="card overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group"
+      onClick={() => navigate(`/help/${service.id}`)}
+    >
+      <div className="relative h-36 overflow-hidden">
         <img
           src={service.image_url}
           alt={service.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        <div className="absolute top-3 right-3">
-          <span className={`tag ${serviceTypeColors[service.type] || 'bg-gray-100 text-gray-600'}`}>
-            {service.type}
+        <div className="absolute top-3 left-3">
+          <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-[var(--text-primary)]">
+            {getTypeIcon(service.type)} {service.type}
           </span>
+        </div>
+        <div className="absolute top-3 right-3 bg-[var(--primary-color)] text-white px-2 py-1 rounded-lg text-sm font-medium">
+          ¥{service.price_min}-{service.price_max}
         </div>
       </div>
 
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+        <h3 className="font-semibold text-[var(--text-primary)] mb-2 group-hover:text-[var(--primary-color)] transition-colors">
           {service.title}
         </h3>
 
@@ -40,30 +50,28 @@ export default function ServiceCard({ service }: ServiceCardProps) {
           {service.description}
         </p>
 
-        <div className="flex items-center gap-4 mb-3">
+        <div className="flex items-center gap-4 text-sm text-[var(--text-light)]">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-            <span className="text-sm font-medium">{service.rating}</span>
-            <span className="text-xs text-[var(--text-light)]">({service.review_count})</span>
+            <span>{service.rating}</span>
+            <span>({service.review_count})</span>
           </div>
-          <div className="flex items-center gap-1 text-[var(--text-secondary)] text-sm">
+          <div className="flex items-center gap-1">
             <MapPin className="w-4 h-4" />
             <span>{service.location}</span>
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-baseline gap-1">
-            <span className="text-lg font-bold text-[var(--primary-color)]">
-              ¥{service.price_min}
-            </span>
-            <span className="text-sm text-[var(--text-light)]">
-              - ¥{service.price_max}/次
-            </span>
+        <div className="mt-4 pt-4 border-t flex items-center gap-3">
+          <img
+            src={service.user.avatar_url}
+            alt={service.user.nickname}
+            className="w-8 h-8 rounded-full object-cover"
+          />
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium text-[var(--text-primary)] truncate">{service.user.nickname}</div>
+            <div className="text-xs text-[var(--text-light)]">已服务 {service.review_count}+ 次</div>
           </div>
-          <button className="px-4 py-2 bg-[var(--primary-color)]/10 text-[var(--primary-color)] rounded-full text-sm font-medium hover:bg-[var(--primary-color)] hover:text-white transition-all duration-300">
-            立即预约
-          </button>
         </div>
       </div>
     </div>

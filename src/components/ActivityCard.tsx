@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Users } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock } from 'lucide-react';
 import { Activity } from '../store/appStore';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,12 +11,7 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('zh-CN', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
 
   const getProgress = () => {
@@ -24,16 +19,19 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
   };
 
   return (
-    <div className="card overflow-hidden cursor-pointer" onClick={() => navigate(`/activities/${activity.id}`)}>
-      <div className="relative h-48">
+    <div 
+      className="card overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group"
+      onClick={() => navigate(`/activities/${activity.id}`)}
+    >
+      <div className="relative h-44 overflow-hidden">
         <img
           src={activity.image_url}
           alt={activity.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute bottom-4 left-4 right-4">
-          <h3 className="text-xl font-bold text-white mb-1">{activity.title}</h3>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <div className="absolute bottom-3 left-3 right-3">
+          <h3 className="font-bold text-white text-lg mb-1">{activity.title}</h3>
           <div className="flex items-center gap-3 text-white/80 text-sm">
             <span className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
@@ -52,22 +50,29 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
           {activity.description}
         </p>
 
-        <div className="flex items-center gap-2 mb-3">
-          <Users className="w-4 h-4 text-[var(--text-secondary)]" />
-          <span className="text-sm text-[var(--text-secondary)]">
-            {activity.current_participants} / {activity.max_participants} 人已报名
-          </span>
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-[var(--text-light)]">报名进度</span>
+            <span className="text-sm font-medium">{activity.current_participants}/{activity.max_participants}</span>
+          </div>
+          <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className="absolute left-0 top-0 h-full bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-full transition-all duration-500"
+              style={{ width: `${getProgress()}%` }}
+            />
+          </div>
         </div>
 
-        <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
-          <div
-            className="absolute left-0 top-0 h-full bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-full transition-all duration-500"
-            style={{ width: `${getProgress()}%` }}
-          />
-        </div>
-
-        <div className="mt-3 flex justify-end">
-          <button className="btn-primary text-sm px-6 py-2">
+        <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex items-center gap-2">
+            <img
+              src={activity.user.avatar_url}
+              alt={activity.user.nickname}
+              className="w-8 h-8 rounded-full object-cover"
+            />
+            <span className="text-sm text-[var(--text-primary)]">{activity.user.nickname}</span>
+          </div>
+          <button className="btn-primary text-sm px-4 py-1.5">
             立即报名
           </button>
         </div>
