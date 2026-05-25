@@ -119,7 +119,7 @@ export default function Home() {
             <div className="relative">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img
-                  src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=cute%20happy%20pets%20dogs%20and%20cats%20playing%20together%20warm%20lighting%20cozy%20home&image_size=landscape_4_3"
+                  src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&h=800&fit=crop"
                   alt="宠物乐园"
                   className="w-full h-80 lg:h-[500px] object-cover"
                 />

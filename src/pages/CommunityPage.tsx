@@ -29,7 +29,7 @@ export default function CommunityPage() {
       user_id: currentUser.id,
       title: newPost.title,
       content: newPost.content,
-      image_url: newPost.image_url || 'https://neeko-copilot.bytedance.net/api/text_to_image?prompt=cute%20pet%20photo%20happy&image_size=landscape_16_9',
+      image_url: newPost.image_url || 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&h=450&fit=crop',
       category: newPost.category,
       created_at: new Date().toISOString(),
       likes: 0,
