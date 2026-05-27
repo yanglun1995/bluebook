@@ -1,7 +1,7 @@
 import React from 'react';
 import { HealthRecord } from '../types';
 import { COLORS } from '../constants';
-import { FileText, Calendar, MapPin, Hospital, User, DollarSign } from 'lucide-react';
+import { FileText, Calendar, MapPin, Hospital, User, DollarSign, Image as ImageIcon } from 'lucide-react';
 
 interface MedicalReportProps {
   record: HealthRecord;
@@ -74,6 +74,24 @@ const MedicalCaseReport: React.FC<{ record: HealthRecord }> = ({ record }) => {
           <h3 className="text-sm font-semibold text-blue-800 mb-2">诊断</h3>
           <p className="text-blue-900 font-medium text-lg">{record.diagnosis}</p>
         </div>
+
+        {/* 病历照片 */}
+        {record.imageUrl && (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" />
+              病历照片
+            </h3>
+            <div className="rounded-lg overflow-hidden border border-gray-200">
+              <img
+                src={record.imageUrl}
+                alt="病历照片"
+                className="w-full h-auto object-cover"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        )}
 
         {/* 病历详情 */}
         <div>
@@ -151,22 +169,29 @@ const ExaminationReport: React.FC<{ record: HealthRecord }> = ({ record }) => {
           </div>
         </div>
 
-        {/* 模拟影像区域 */}
-        <div className="bg-gray-100 rounded-lg p-8 border border-gray-300">
-          <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center">
-            <div className="text-center text-gray-500">
-              <div className="text-6xl mb-4">📷</div>
-              <p className="text-sm">医学影像预览区域</p>
-              <p className="text-xs mt-1">（演示数据，非真实影像）</p>
+        {/* 检查报告照片 */}
+        {record.imageUrl && (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" />
+              检查报告照片
+            </h3>
+            <div className="rounded-lg overflow-hidden border border-gray-200">
+              <img
+                src={record.imageUrl}
+                alt="检查报告"
+                className="w-full h-auto object-cover"
+                loading="lazy"
+              />
             </div>
           </div>
-        </div>
+        )}
 
         {/* 诊断结果 */}
         <div className="bg-green-50 rounded-lg p-4 border border-green-200">
           <h3 className="text-sm font-semibold text-green-800 mb-2">诊断意见</h3>
           <p className="text-green-900 font-medium text-lg">{record.diagnosis}</p>
-          <p className="text-green-800 mt-2 text-sm">{record.notes}</p>
+          <p className="text-green-800 mt-2 text-sm whitespace-pre-wrap">{record.notes}</p>
         </div>
 
         {/* 费用信息 */}
@@ -245,6 +270,24 @@ const LabTestReport: React.FC<{ record: HealthRecord }> = ({ record }) => {
           </div>
         </div>
 
+        {/* 检验单照片 */}
+        {record.imageUrl && (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" />
+              检验单照片
+            </h3>
+            <div className="rounded-lg overflow-hidden border border-gray-200">
+              <img
+                src={record.imageUrl}
+                alt="检验单"
+                className="w-full h-auto object-cover"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        )}
+
         {/* 临床诊断 */}
         <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
           <h3 className="text-sm font-semibold text-orange-800 mb-2">临床诊断</h3>
@@ -285,7 +328,7 @@ const LabTestReport: React.FC<{ record: HealthRecord }> = ({ record }) => {
         {/* 备注 */}
         <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
           <h3 className="text-sm font-semibold text-gray-700 mb-2">备注</h3>
-          <p className="text-gray-700 text-sm">{record.notes}</p>
+          <p className="text-gray-700 text-sm whitespace-pre-wrap">{record.notes}</p>
         </div>
 
         {/* 费用信息 */}
@@ -340,10 +383,28 @@ const DefaultReport: React.FC<{ record: HealthRecord }> = ({ record }) => {
           </div>
         </div>
 
+        {/* 记录照片 */}
+        {record.imageUrl && (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" />
+              记录照片
+            </h3>
+            <div className="rounded-lg overflow-hidden border border-gray-200">
+              <img
+                src={record.imageUrl}
+                alt="记录照片"
+                className="w-full h-auto object-cover"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        )}
+
         <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
           <h3 className="text-sm font-semibold text-gray-700 mb-2">记录内容</h3>
           <p className="text-gray-900 font-medium text-lg">{record.diagnosis}</p>
-          <p className="text-gray-700 mt-2">{record.notes}</p>
+          <p className="text-gray-700 mt-2 whitespace-pre-wrap">{record.notes}</p>
         </div>
 
         <div className="flex items-center justify-between bg-green-50 rounded-lg p-4 border border-green-200">

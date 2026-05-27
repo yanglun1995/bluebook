@@ -12,16 +12,34 @@ import {
   ChevronRight,
   Heart,
   Edit3,
+  Key,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 
 export const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const { resetData, showToast, appLockEnabled, toggleAppLock, familyMembers, logout } = useAppStore();
+  const { 
+    resetData, 
+    showToast, 
+    appLockEnabled, 
+    toggleAppLock, 
+    familyMembers, 
+    logout,
+    appLockPassword,
+    setAppLockPassword,
+    clearAppLockPassword
+  } = useAppStore();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showSetPassword, setShowSetPassword] = useState(false);
   const [editName, setEditName] = useState('李明');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleLogout = () => {
     if (confirm('确定要退出登录吗？')) {
@@ -38,6 +56,27 @@ export const ProfilePage: React.FC = () => {
   const handleSaveProfile = () => {
     showToast('个人信息已更新', 'success');
     setShowEditProfile(false);
+  };
+
+  const handleSetPassword = () => {
+    if (password.length < 4) {
+      showToast('密码至少需要4位数字', 'error');
+      return;
+    }
+    if (password !== confirmPassword) {
+      showToast('两次输入的密码不一致', 'error');
+      return;
+    }
+    setAppLockPassword(password);
+    setShowSetPassword(false);
+    setPassword('');
+    setConfirmPassword('');
+  };
+
+  const handleClearPassword = () => {
+    if (confirm('确定要清除应用锁密码吗？')) {
+      clearAppLockPassword();
+    }
   };
 
   return (
@@ -183,23 +222,31 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-4 p-4 bg-gradient-to-r from-purple-50/50 to-pink-50/50 rounded-xl hover:from-purple-100/50 hover:to-pink-100/50 transition-all">
+            <div className="mt-4 p-4 bg-gradient-to-r from-purple-50/50 to-pink-50/50 rounded-xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
                     <Lock className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-900 font-semibold">应用锁</p>
-                    <p className="text-gray-500 text-sm">开启后进入应用需要验证密码/指纹，保护您的隐私安全</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-gray-900 font-semibold">应用锁</p>
+                      {appLockPassword && (
+                        <span className="px-2 py-0.5 bg-green-100 text-green-600 text-xs font-medium rounded-full">已设置密码</span>
+                      )}
+                    </div>
+                    <p className="text-gray-500 text-sm">开启后进入应用需要验证密码，保护您的隐私安全</p>
                   </div>
                 </div>
                 <button
                   onClick={toggleAppLock}
+                  disabled={!appLockPassword}
                   className={`w-14 h-7 rounded-full transition-all duration-300 relative ${
                     appLockEnabled 
                       ? 'bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg shadow-green-500/30' 
-                      : 'bg-gray-300'
+                      : appLockPassword 
+                        ? 'bg-gray-300' 
+                        : 'bg-gray-200 cursor-not-allowed'
                   }`}
                 >
                   <div
@@ -210,6 +257,28 @@ export const ProfilePage: React.FC = () => {
                 </button>
               </div>
             </div>
+
+            {!appLockPassword ? (
+              <div className="mt-3">
+                <button
+                  onClick={() => setShowSetPassword(true)}
+                  className="w-full flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all"
+                >
+                  <Key className="w-5 h-5 text-blue-600" />
+                  <span className="text-blue-600 font-medium">设置应用锁密码</span>
+                </button>
+              </div>
+            ) : (
+              <div className="mt-3">
+                <button
+                  onClick={handleClearPassword}
+                  className="w-full flex items-center gap-3 p-3 bg-red-50 hover:bg-red-100 rounded-xl transition-all"
+                >
+                  <Key className="w-5 h-5 text-red-600" />
+                  <span className="text-red-600 font-medium">清除应用锁密码</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -308,7 +377,7 @@ export const ProfilePage: React.FC = () => {
 
       {showResetConfirm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 transform scale-95 opacity-0 animate-scale-in">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Trash2 className="w-8 h-8 text-red-600" />
@@ -380,6 +449,80 @@ export const ProfilePage: React.FC = () => {
                   className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg"
                 >
                   保存
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSetPassword && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4">
+            <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white p-6 rounded-t-3xl">
+              <h3 className="text-xl font-bold">设置应用锁密码</h3>
+              <p className="text-white/80 text-sm mt-1">请设置4位数字密码</p>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">数字密码</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    placeholder="请输入4位数字"
+                    maxLength={4}
+                  />
+                  <button
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5 text-gray-400" /> : <Eye className="w-5 h-5 text-gray-400" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">确认密码</label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    placeholder="请再次输入密码"
+                    maxLength={4}
+                  />
+                  <button
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-5 h-5 text-gray-400" /> : <Eye className="w-5 h-5 text-gray-400" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-xl">
+                <p className="text-blue-600 text-sm">
+                  🔒 设置后可开启应用锁，保护您的隐私安全
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowSetPassword(false)}
+                  className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleSetPassword}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-semibold rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all shadow-lg"
+                >
+                  设置密码
                 </button>
               </div>
             </div>

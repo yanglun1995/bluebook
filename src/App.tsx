@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ArchivePage } from './pages/ArchivePage';
 import { StatisticsPage } from './pages/StatisticsPage';
@@ -11,24 +11,20 @@ import { RegisterPage } from './pages/RegisterPage';
 import { AboutPage } from './pages/AboutPage';
 import { BottomNav } from './components/BottomNav';
 import { Toast } from './components/Toast';
+import { SplashScreen } from './components/SplashScreen';
 import { useAppStore } from './store';
 
 function AppContent() {
   const location = useLocation();
-  const { initDB, isLoggedIn, login } = useAppStore();
+  const { isLoggedIn, login, fetchRecords } = useAppStore();
   const [showRegister, setShowRegister] = useState(false);
   const showBottomNav = !location.pathname.startsWith('/record/') && location.pathname !== '/family';
 
   useEffect(() => {
-    const savedLoginStatus = localStorage.getItem('isLoggedIn');
-    if (savedLoginStatus === 'true') {
-      useAppStore.getState().login();
+    if (isLoggedIn) {
+      fetchRecords();
     }
-  }, []);
-
-  useEffect(() => {
-    initDB();
-  }, [initDB]);
+  }, [isLoggedIn, fetchRecords]);
 
   if (showRegister) {
     return <RegisterPage onRegister={() => alert('注册成功！')} onBack={() => setShowRegister(false)} />;
@@ -56,8 +52,33 @@ function AppContent() {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const [splashInitialized, setSplashInitialized] = useState(false);
+
+  useEffect(() => {
+    setSplashInitialized(true);
+    const hasShownSplash = localStorage.getItem('hasShownSplash');
+    
+    if (hasShownSplash === 'true') {
+      setShowSplash(false);
+    }
+  }, []);
+
+  const handleSplashComplete = () => {
+    localStorage.setItem('hasShownSplash', 'true');
+    setShowSplash(false);
+  };
+
+  if (showSplash && splashInitialized) {
+    return <SplashScreen onComplete={handleSplashComplete} />;
+  }
+
+  if (!splashInitialized) {
+    return null;
+  }
+
   return (
-    <Router>
+    <Router basename="/bluebook">
       <AppContent />
     </Router>
   );

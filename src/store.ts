@@ -1,19 +1,74 @@
 import { create } from 'zustand';
 import { HealthRecord, FilterState } from './types';
-import { db } from './utils/db';
 import { INITIAL_RECORDS } from './constants';
 
-// 内存存储作为后备方案
-let memoryRecords: HealthRecord[] = [...INITIAL_RECORDS];
-let useMemoryFallback = false;
+const DATA_VERSION = 'v4';
 
-// 家庭成员类型
 interface FamilyMember {
   id: string;
   name: string;
   avatar?: string;
   relationship?: string;
 }
+
+const loadRecords = (): HealthRecord[] => {
+  try {
+    const savedVersion = localStorage.getItem('health_records_version');
+    const saved = localStorage.getItem('health_records');
+    
+    if (savedVersion !== DATA_VERSION || !saved) {
+      const initial = [...INITIAL_RECORDS].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      try {
+        localStorage.setItem('health_records', JSON.stringify(initial));
+        localStorage.setItem('health_records_version', DATA_VERSION);
+      } catch (e) {}
+      return initial;
+    }
+    
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load saved records', e);
+  }
+  
+  const initial = [...INITIAL_RECORDS].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  try {
+    localStorage.setItem('health_records', JSON.stringify(initial));
+    localStorage.setItem('health_records_version', DATA_VERSION);
+  } catch (e) {}
+  return initial;
+};
+
+const saveRecords = (records: HealthRecord[]) => {
+  try {
+    localStorage.setItem('health_records', JSON.stringify(records));
+    localStorage.setItem('health_records_version', DATA_VERSION);
+  } catch (e) {
+    console.error('Failed to save records', e);
+  }
+};
+
+const loadLoginStatus = (): boolean => {
+  try {
+    const saved = localStorage.getItem('isLoggedIn');
+    return saved === 'true';
+  } catch (e) {
+    console.error('Failed to load login status', e);
+  }
+  return false;
+};
+
+const loadAppLockPassword = (): string | null => {
+  try {
+    return localStorage.getItem('appLockPassword') || null;
+  } catch (e) {
+    return null;
+  }
+};
 
 interface AppState {
   isLoggedIn: boolean;
@@ -22,8 +77,8 @@ interface AppState {
   loading: boolean;
   toast: { message: string; type: 'success' | 'error' | 'info' } | null;
   appLockEnabled: boolean;
+  appLockPassword: string | null;
   familyMembers: FamilyMember[];
-  initDB: () => Promise<void>;
   fetchRecords: () => Promise<void>;
   addRecord: (record: HealthRecord) => Promise<void>;
   updateRecord: (record: HealthRecord) => Promise<void>;
@@ -34,6 +89,9 @@ interface AppState {
   showToast: (message: string, type: 'success' | 'error' | 'info') => void;
   hideToast: () => void;
   toggleAppLock: () => void;
+  setAppLockPassword: (password: string) => void;
+  clearAppLockPassword: () => void;
+  verifyAppLockPassword: (password: string) => boolean;
   getFilteredRecords: () => HealthRecord[];
   addFamilyMember: (name: string, relationship?: string) => void;
   deleteFamilyMember: (id: string) => void;
@@ -42,17 +100,18 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
-  records: [],
+  records: loadRecords(),
   filters: {
     member: '全部',
     type: '全部',
     timeRange: '全部时间',
     searchQuery: '',
   },
-  loading: true,
+  loading: false,
   toast: null,
   appLockEnabled: false,
-  isLoggedIn: false,
+  appLockPassword: loadAppLockPassword(),
+  isLoggedIn: loadLoginStatus(),
   familyMembers: [
     { id: '1', name: '李明', relationship: '本人' }
   ],
@@ -67,153 +126,52 @@ export const useAppStore = create<AppState>((set, get) => ({
     localStorage.setItem('isLoggedIn', 'false');
   },
 
-  initDB: async () => {
-    try {
-      await db.init();
-      await db.initializeWithInitialData();
-      await get().fetchRecords();
-    } catch (error) {
-      console.error('Failed to init DB, using memory fallback:', error);
-      useMemoryFallback = true;
-      // 使用内存数据
-      set({ 
-        records: [...memoryRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-        loading: false 
-      });
-    }
-  },
-
   fetchRecords: async () => {
-    try {
-      set({ loading: true });
-      
-      if (useMemoryFallback) {
-        set({ 
-          records: [...memoryRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-          loading: false 
-        });
-        return;
-      }
-
-      const records = await db.getAllRecords();
-      set({ records: records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) });
-    } catch (error) {
-      console.error('Failed to fetch records, using memory fallback:', error);
-      useMemoryFallback = true;
-      set({ 
-        records: [...memoryRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-        loading: false 
-      });
-    } finally {
-      set({ loading: false });
-    }
+    set({ loading: true });
+    await new Promise(r => setTimeout(r, 100));
+    set({ records: loadRecords(), loading: false });
   },
 
   addRecord: async (record) => {
-    try {
-      if (useMemoryFallback) {
-        memoryRecords.push(record);
-        set({ 
-          records: [...memoryRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) 
-        });
-        get().showToast('记录添加成功', 'success');
-        return;
-      }
-
-      await db.addRecord(record);
-      await get().fetchRecords();
-      get().showToast('记录添加成功', 'success');
-    } catch (error) {
-      console.error('Failed to add record:', error);
-      get().showToast('添加记录失败', 'error');
-    }
+    const newRecords = [record, ...get().records];
+    saveRecords(newRecords);
+    set({ records: newRecords });
+    get().showToast('记录添加成功', 'success');
   },
 
   updateRecord: async (record) => {
-    try {
-      if (useMemoryFallback) {
-        memoryRecords = memoryRecords.map(r => r.id === record.id ? record : r);
-        set({ 
-          records: [...memoryRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) 
-        });
-        get().showToast('记录更新成功', 'success');
-        return;
-      }
-
-      await db.updateRecord(record);
-      await get().fetchRecords();
-      get().showToast('记录更新成功', 'success');
-    } catch (error) {
-      console.error('Failed to update record:', error);
-      get().showToast('更新记录失败', 'error');
-    }
+    const newRecords = get().records.map(r => r.id === record.id ? record : r);
+    saveRecords(newRecords);
+    set({ records: newRecords });
+    get().showToast('记录更新成功', 'success');
   },
 
   deleteRecord: async (id) => {
-    try {
-      if (useMemoryFallback) {
-        memoryRecords = memoryRecords.filter(r => r.id !== id);
-        set({ 
-          records: [...memoryRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) 
-        });
-        get().showToast('记录删除成功', 'success');
-        return;
-      }
-
-      await db.deleteRecord(id);
-      await get().fetchRecords();
-      get().showToast('记录删除成功', 'success');
-    } catch (error) {
-      console.error('Failed to delete record:', error);
-      get().showToast('删除记录失败', 'error');
-    }
+    const newRecords = get().records.filter(r => r.id !== id);
+    saveRecords(newRecords);
+    set({ records: newRecords });
+    get().showToast('记录删除成功', 'success');
   },
 
   toggleStar: async (id) => {
-    try {
-      const record = get().records.find(r => r.id === id);
-      if (record) {
-        const updatedRecord = { ...record, starred: !record.starred };
-        
-        if (useMemoryFallback) {
-          memoryRecords = memoryRecords.map(r => r.id === id ? updatedRecord : r);
-          set({ 
-            records: [...memoryRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) 
-          });
-          return;
-        }
-
-        await db.updateRecord(updatedRecord);
-        await get().fetchRecords();
-      }
-    } catch (error) {
-      console.error('Failed to toggle star:', error);
-      get().showToast('操作失败', 'error');
-    }
+    const newRecords = get().records.map(r => 
+      r.id === id ? { ...r, starred: !r.starred } : r
+    );
+    saveRecords(newRecords);
+    set({ records: newRecords });
   },
 
   resetData: async () => {
-    try {
-      if (useMemoryFallback) {
-        memoryRecords = [...INITIAL_RECORDS];
-        set({ 
-          records: [...memoryRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) 
-        });
-        get().showToast('数据已重置', 'success');
-        return;
-      }
-
-      await db.resetToInitialData();
-      await get().fetchRecords();
-      get().showToast('数据已重置', 'success');
-    } catch (error) {
-      console.error('Failed to reset data:', error);
-      get().showToast('重置失败', 'error');
-    }
+    const records = [...INITIAL_RECORDS].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    saveRecords(records);
+    set({ records });
+    get().showToast('数据已重置', 'success');
   },
 
-  setFilters: (filters) => {
-    set(state => ({ filters: { ...state.filters, ...filters } }));
+  setFilters: (filters: Partial<FilterState>) => {
+    set(state => ({
+      filters: { ...state.filters, ...filters }
+    }));
   },
 
   showToast: (message, type) => {
@@ -226,7 +184,30 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   toggleAppLock: () => {
+    const currentState = get();
+    if (!currentState.appLockPassword) {
+      get().showToast('请先设置应用锁密码', 'error');
+      return;
+    }
     set(state => ({ appLockEnabled: !state.appLockEnabled }));
+    const newState = get();
+    get().showToast(newState.appLockEnabled ? '应用锁已开启' : '应用锁已关闭', 'success');
+  },
+
+  setAppLockPassword: (password: string) => {
+    set({ appLockPassword: password });
+    localStorage.setItem('appLockPassword', password);
+    get().showToast('应用锁密码设置成功', 'success');
+  },
+
+  clearAppLockPassword: () => {
+    set({ appLockPassword: null, appLockEnabled: false });
+    localStorage.removeItem('appLockPassword');
+    get().showToast('应用锁密码已清除', 'success');
+  },
+
+  verifyAppLockPassword: (password: string): boolean => {
+    return get().appLockPassword === password;
   },
 
   addFamilyMember: (name: string, relationship?: string) => {
