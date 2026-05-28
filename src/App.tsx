@@ -52,29 +52,26 @@ function AppContent() {
 }
 
 export default function App() {
-  const [showSplash, setShowSplash] = useState(true);
-  const [splashInitialized, setSplashInitialized] = useState(false);
+  const [showSplash, setShowSplash] = useState(() => {
+    return localStorage.getItem('hasShownSplash') !== 'true';
+  });
 
   useEffect(() => {
-    setSplashInitialized(true);
-    const hasShownSplash = localStorage.getItem('hasShownSplash');
-    
-    if (hasShownSplash === 'true') {
-      setShowSplash(false);
+    if (!showSplash) {
+      const splashEnded = localStorage.getItem('splashEnded');
+      if (!splashEnded) {
+        setShowSplash(true);
+      }
     }
-  }, []);
+  }, [showSplash]);
 
   const handleSplashComplete = () => {
     localStorage.setItem('hasShownSplash', 'true');
     setShowSplash(false);
   };
 
-  if (showSplash && splashInitialized) {
+  if (showSplash) {
     return <SplashScreen onComplete={handleSplashComplete} />;
-  }
-
-  if (!splashInitialized) {
-    return null;
   }
 
   return (
