@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -6,16 +6,19 @@ interface SplashScreenProps {
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   const [animate, setAnimate] = useState(false);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     setAnimate(true);
-    
     const timer = setTimeout(() => {
-      onComplete();
-    }, 3500);
-
+      onCompleteRef.current();
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center overflow-hidden">

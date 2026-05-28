@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ArchivePage } from './pages/ArchivePage';
 import { StatisticsPage } from './pages/StatisticsPage';
 import { UploadPage } from './pages/UploadPage';
@@ -56,18 +56,18 @@ export default function App() {
     return localStorage.getItem('hasShownSplash') !== 'true';
   });
 
-  const handleSplashComplete = () => {
+  const handleSplashComplete = useCallback(() => {
     localStorage.setItem('hasShownSplash', 'true');
     setShowSplash(false);
-  };
+  }, []);
 
   if (showSplash) {
     return <SplashScreen onComplete={handleSplashComplete} />;
   }
 
   return (
-    <Router basename="/bluebook">
+    <HashRouter>
       <AppContent />
-    </Router>
+    </HashRouter>
   );
 }
