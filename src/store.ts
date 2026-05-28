@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { HealthRecord, FilterState } from './types';
 import { INITIAL_RECORDS } from './constants';
 
-const DATA_VERSION = 'v4';
+const DATA_VERSION = 'v5';
 
 interface FamilyMember {
   id: string;

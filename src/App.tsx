@@ -56,15 +56,6 @@ export default function App() {
     return localStorage.getItem('hasShownSplash') !== 'true';
   });
 
-  useEffect(() => {
-    if (!showSplash) {
-      const splashEnded = localStorage.getItem('splashEnded');
-      if (!splashEnded) {
-        setShowSplash(true);
-      }
-    }
-  }, [showSplash]);
-
   const handleSplashComplete = () => {
     localStorage.setItem('hasShownSplash', 'true');
     setShowSplash(false);
