@@ -51,18 +51,41 @@ function AppContent() {
   );
 }
 
+// 从 localStorage 同步读取（避免初始渲染白屏）
+// 返回 true 表示需要显示开屏动画
+function shouldShowSplash(): boolean {
+  try {
+    return localStorage.getItem('health_app_splash_v1') !== 'true';
+  } catch {
+    return true;
+  }
+}
+
 export default function App() {
-  const [showSplash, setShowSplash] = useState(() => {
-    return localStorage.getItem('hasShownSplash') !== 'true';
-  });
+  const [showSplash, setShowSplash] = useState(shouldShowSplash);
+  const [splashKey, setSplashKey] = useState(0);
 
   const handleSplashComplete = useCallback(() => {
-    localStorage.setItem('hasShownSplash', 'true');
+    try {
+      localStorage.setItem('health_app_splash_v1', 'true');
+    } catch {}
     setShowSplash(false);
   }, []);
 
+  // 强制显示开屏动画（可通过 URL 参数调试）
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('splash') === 'force') {
+      try {
+        localStorage.removeItem('health_app_splash_v1');
+      } catch {}
+      setShowSplash(true);
+      setSplashKey(k => k + 1);
+    }
+  }, []);
+
   if (showSplash) {
-    return <SplashScreen onComplete={handleSplashComplete} />;
+    return <SplashScreen key={splashKey} onComplete={handleSplashComplete} />;
   }
 
   return (

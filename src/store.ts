@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { HealthRecord, FilterState } from './types';
 import { INITIAL_RECORDS } from './constants';
 
-const DATA_VERSION = 'v5';
+const DATA_VERSION = 'v6_20260618_full_records';
 
 interface FamilyMember {
   id: string;
@@ -16,7 +16,12 @@ const loadRecords = (): HealthRecord[] => {
     const savedVersion = localStorage.getItem('health_records_version');
     const saved = localStorage.getItem('health_records');
     
-    if (savedVersion !== DATA_VERSION || !saved) {
+    // 1. 强制清除旧版本缓存，强制使用最新数据
+    if (savedVersion !== DATA_VERSION) {
+      try {
+        localStorage.removeItem('health_records');
+        localStorage.removeItem('health_records_version');
+      } catch (e) {}
       const initial = [...INITIAL_RECORDS].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       try {
         localStorage.setItem('health_records', JSON.stringify(initial));
@@ -25,10 +30,19 @@ const loadRecords = (): HealthRecord[] => {
       return initial;
     }
     
+    // 2. 即使版本匹配，也要校验数据完整性
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        // 检查每条记录是否有 notes（病历摘要）字段
+        const hasValidNotes = parsed.every((r: HealthRecord) => r.notes && r.notes.length > 50);
+        if (hasValidNotes) {
+          return parsed.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        }
+        // 数据不完整，使用新数据
+        try {
+          localStorage.removeItem('health_records');
+        } catch (e) {}
       }
     }
   } catch (e) {
