@@ -5,6 +5,7 @@ import { StatisticsPage } from './pages/StatisticsPage';
 import { UploadPage } from './pages/UploadPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { RecordDetailPage } from './pages/RecordDetailPage';
+import VisitDetailPage from './pages/VisitDetailPage';
 import { FamilyManagementPage } from './pages/FamilyManagementPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -18,7 +19,9 @@ function AppContent() {
   const location = useLocation();
   const { isLoggedIn, login, fetchRecords } = useAppStore();
   const [showRegister, setShowRegister] = useState(false);
-  const showBottomNav = !location.pathname.startsWith('/record/') && location.pathname !== '/family';
+  const showBottomNav = !location.pathname.startsWith('/record/') &&
+    !location.pathname.startsWith('/visit/') &&
+    location.pathname !== '/family';
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -42,6 +45,7 @@ function AppContent() {
         <Route path="/upload" element={<UploadPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/record/:id" element={<RecordDetailPage />} />
+        <Route path="/visit/:visitId" element={<VisitDetailPage />} />
         <Route path="/family" element={<FamilyManagementPage />} />
         <Route path="/about" element={<AboutPage />} />
       </Routes>

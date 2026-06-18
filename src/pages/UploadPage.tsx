@@ -46,6 +46,7 @@ export const UploadPage: React.FC = () => {
       starred: false,
       cost: 0,
       createdAt: new Date().toISOString(),
+      visitId: `V_${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}_${Date.now()}`,
     };
 
     addRecord(newRecord);

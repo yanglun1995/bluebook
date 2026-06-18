@@ -14,6 +14,7 @@ export interface HealthRecord {
   starred: boolean;
   cost: number;
   createdAt: string;
+  visitId: string; // 就诊ID - 同一次就诊的所有记录共用此ID
 }
 
 export interface FilterState {
@@ -21,4 +22,16 @@ export interface FilterState {
   type: string;
   timeRange: string;
   searchQuery: string;
+}
+
+// 一次就诊（包含多条记录）
+export interface Visit {
+  visitId: string;
+  member: string;
+  date: string;
+  hospital: string;
+  department: string;
+  records: HealthRecord[];
+  totalCost: number;
+  mainDiagnosis: string; // 主要诊断（就诊标题）
 }

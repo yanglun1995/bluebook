@@ -1,10 +1,21 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Download, MoreVertical, X, ChevronDown, ChevronRight, Star, Calendar, MapPin } from 'lucide-react';
+import { Search, Download, MoreVertical, X, ChevronDown, Star, Calendar, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
-import { TimelineGroup } from '../components/TimelineGroup';
+import { VisitCard } from '../components/VisitCard';
 import { HealthRecord } from '../types';
 import { RECORD_TYPES, TIME_RANGES } from '../constants';
+
+// 就诊分组结构
+interface VisitGroup {
+  visitId: string;
+  records: HealthRecord[];
+  date: string;
+  hospital: string;
+  department: string;
+  mainDiagnosis: string;
+  totalCost: number;
+}
 
 export const ArchivePage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,16 +27,18 @@ export const ArchivePage: React.FC = () => {
     showToast,
     familyMembers,
   } = useAppStore();
-  
+
   const [showSearch, setShowSearch] = useState(false);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
-  
+  const [viewMode, setViewMode] = useState<'visit' | 'record'>('visit'); // 按就诊或按记录
+
   const members = useMemo(() => {
     return ['全部', ...familyMembers.map(m => m.name)];
   }, [familyMembers]);
 
   const filteredRecords = getFilteredRecords();
 
+  // 按记录分组（原有逻辑）
   const groupedRecords = useMemo(() => {
     const groups: { [key: string]: HealthRecord[] } = {};
     filteredRecords.forEach((record) => {
@@ -37,6 +50,47 @@ export const ArchivePage: React.FC = () => {
       groups[key].push(record);
     });
     return groups;
+  }, [filteredRecords]);
+
+  // 按就诊分组（新逻辑）
+  const visitGroups = useMemo(() => {
+    const visitMap = new Map<string, HealthRecord[]>();
+    filteredRecords.forEach((r) => {
+      if (!visitMap.has(r.visitId)) {
+        visitMap.set(r.visitId, []);
+      }
+      visitMap.get(r.visitId)!.push(r);
+    });
+
+    // 转换为 VisitGroup 数组并按日期排序
+    const visits: VisitGroup[] = Array.from(visitMap.entries())
+      .map(([visitId, recs]) => {
+        const mainDiagRec = recs.find(r => r.type === '病历');
+        const firstRec = recs[0];
+        return {
+          visitId,
+          records: recs,
+          date: firstRec.date,
+          hospital: firstRec.hospital,
+          department: firstRec.department,
+          mainDiagnosis: mainDiagRec?.diagnosis || firstRec.diagnosis,
+          totalCost: recs.reduce((sum, r) => sum + r.cost, 0),
+        };
+      })
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    // 再按年月分组
+    const byMonth: { [key: string]: VisitGroup[] } = {};
+    visits.forEach((visit) => {
+      const date = new Date(visit.date);
+      const key = `${date.getFullYear()}年${date.getMonth() + 1}月`;
+      if (!byMonth[key]) {
+        byMonth[key] = [];
+      }
+      byMonth[key].push(visit);
+    });
+
+    return byMonth;
   }, [filteredRecords]);
 
   const handleExport = () => {
@@ -69,7 +123,7 @@ export const ArchivePage: React.FC = () => {
               </button>
               <button
                 onClick={handleExport}
-                className="p-2.5 bg-gradient-to-br from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 rounded-xl transition-all shadow-sm"
+                className="p-2.5 bg-gradient-to-br from-green-50 to-emerald-500 hover:from-green-100 hover:to-emerald-100 rounded-xl transition-all shadow-sm"
               >
                 <Download className="w-5 h-5 text-green-600" />
               </button>
@@ -109,6 +163,30 @@ export const ArchivePage: React.FC = () => {
         )}
 
         <div className="space-y-4">
+          {/* 视图切换 Tab */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-2 flex gap-2">
+            <button
+              onClick={() => setViewMode('visit')}
+              className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                viewMode === 'visit'
+                  ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              按就诊查看
+            </button>
+            <button
+              onClick={() => setViewMode('record')}
+              className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                viewMode === 'record'
+                  ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              按记录查看
+            </button>
+          </div>
+
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-1 h-4 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full"></div>
@@ -194,86 +272,130 @@ export const ArchivePage: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-4">
-          {Object.entries(groupedRecords).map(([period, records]) => (
-            <div key={period} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="px-5 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100 flex items-center justify-between">
-                <div className="flex items-center gap-2">
+        {/* 按就诊查看 */}
+        {viewMode === 'visit' && (
+          <div className="space-y-4">
+            {Object.entries(visitGroups).map(([period, visits]) => (
+              <div key={period} className="space-y-3">
+                <div className="flex items-center gap-2 px-1 mb-2">
                   <Calendar className="w-4 h-4 text-gray-400" />
-                  <span className="font-semibold text-gray-800">{period}</span>
+                  <span className="font-semibold text-gray-700 text-sm">{period}</span>
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full ml-auto">
+                    {visits.length} 次就诊
+                  </span>
                 </div>
-                <span className="text-xs text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
-                  {records.length} 条记录
-                </span>
-              </div>
-              <div className="divide-y divide-gray-50">
-                {records.map((record) => (
-                  <button
-                    key={record.id}
-                    onClick={() => navigate(`/record/${record.id}`)}
-                    className="w-full p-5 hover:bg-gradient-to-r hover:from-green-50/50 hover:to-white transition-all duration-200 text-left group"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className={`w-12 h-12 rounded-2xl ${getTypeColor(record.type)} flex items-center justify-center shadow-lg flex-shrink-0 group-hover:scale-110 transition-transform`}>
-                        <span className="text-white text-lg font-bold">
-                          {record.type === '病历' ? '📋' : record.type === '检查报告' ? '🏥' : record.type === '检验结果' ? '🧪' : '📄'}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <div>
-                            <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium text-white mb-2 ${
-                              record.type === '病历' ? 'bg-blue-500' : 
-                              record.type === '检查报告' ? 'bg-green-500' : 
-                              record.type === '检验结果' ? 'bg-orange-500' : 'bg-gray-500'
-                            }`}>
-                              {record.type}
-                            </span>
-                            <h3 className="font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
-                              {record.diagnosis}
-                            </h3>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleStar(record.id);
-                            }}
-                            className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
-                          >
-                            <Star
-                              className={`w-5 h-5 ${
-                                record.starred ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                              }`}
-                            />
-                          </button>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5" />
-                            {record.hospital}
-                          </span>
-                          <span>·</span>
-                          <span>{record.city}</span>
-                        </div>
-                        <div className="mt-2 text-xs text-gray-400">
-                          {record.date}
-                        </div>
-                      </div>
-                    </div>
-                  </button>
+
+                {visits.map((visit) => (
+                  <VisitCard
+                    key={visit.visitId}
+                    visitId={visit.visitId}
+                    date={visit.date}
+                    hospital={visit.hospital}
+                    department={visit.department}
+                    mainDiagnosis={visit.mainDiagnosis}
+                    totalCost={visit.totalCost}
+                    records={visit.records}
+                    onClick={() => navigate(`/visit/${visit.visitId}`)}
+                  />
                 ))}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
 
-        {Object.keys(groupedRecords).length === 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-gray-400" />
-            </div>
-            <p className="text-gray-500">未找到健康记录</p>
-            <p className="text-gray-400 text-sm mt-1">尝试调整筛选条件</p>
+            {Object.keys(visitGroups).length === 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <p className="text-gray-500">未找到就诊记录</p>
+                <p className="text-gray-400 text-sm mt-1">尝试调整筛选条件</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 按记录查看 */}
+        {viewMode === 'record' && (
+          <div className="space-y-4">
+            {Object.entries(groupedRecords).map(([period, records]) => (
+              <div key={period} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="px-5 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <span className="font-semibold text-gray-800">{period}</span>
+                  </div>
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+                    {records.length} 条记录
+                  </span>
+                </div>
+                <div className="divide-y divide-gray-50">
+                  {records.map((record) => (
+                    <button
+                      key={record.id}
+                      onClick={() => navigate(`/record/${record.id}`)}
+                      className="w-full p-5 hover:bg-gradient-to-r hover:from-green-50/50 hover:to-white transition-all duration-200 text-left group"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className={`w-12 h-12 rounded-2xl ${getTypeColor(record.type)} flex items-center justify-center shadow-lg flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                          <span className="text-white text-lg font-bold">
+                            {record.type === '病历' ? '📋' : record.type === '检查报告' ? '🏥' : record.type === '检验结果' ? '🧪' : '📄'}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <div>
+                              <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium text-white mb-2 ${
+                                record.type === '病历' ? 'bg-blue-500' :
+                                record.type === '检查报告' ? 'bg-green-500' :
+                                record.type === '检验结果' ? 'bg-orange-500' : 'bg-gray-500'
+                              }`}>
+                                {record.type}
+                              </span>
+                              <h3 className="font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
+                                {record.diagnosis}
+                              </h3>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleStar(record.id);
+                              }}
+                              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+                            >
+                              <Star
+                                className={`w-5 h-5 ${
+                                  record.starred ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                                }`}
+                              />
+                            </button>
+                          </div>
+                          <div className="flex items-center gap-3 text-sm text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5" />
+                              {record.hospital}
+                            </span>
+                            <span>·</span>
+                            <span>{record.city}</span>
+                          </div>
+                          <div className="mt-2 text-xs text-gray-400">
+                            {record.date}
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {Object.keys(groupedRecords).length === 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <p className="text-gray-500">未找到健康记录</p>
+                <p className="text-gray-400 text-sm mt-1">尝试调整筛选条件</p>
+              </div>
+            )}
           </div>
         )}
       </main>

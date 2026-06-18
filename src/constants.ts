@@ -9,7 +9,10 @@ export const COLORS = {
   },
 };
 
+// 就诊ID格式：V_YYYYMMDD_序号
+// 同一次就诊的所有记录共享同一个 visitId
 export const INITIAL_RECORDS: HealthRecord[] = [
+  // ========== 就诊1：2010-05-12 北京协和医院 耳鼻喉科 急性化脓性扁桃体炎（2项） ==========
   {
     id: '1',
     member: '李明',
@@ -24,7 +27,26 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 200,
     createdAt: '2010-05-12T10:00:00Z',
+    visitId: 'V_20100512_01',
   },
+  {
+    id: '1_ext',
+    member: '李明',
+    type: '检验结果',
+    diagnosis: '血常规+CRP',
+    hospital: '中国医学科学院北京协和医院',
+    city: '北京',
+    date: '2010-05-12',
+    department: '耳鼻喉科',
+    notes: '【血常规】\n白细胞(WBC) 15.8×10^9/L ↑（参考值4-10）\n中性粒细胞(NEUT%) 85% ↑（参考值50-70）\n淋巴细胞(LYM%) 10% ↓（参考值20-40）\n血红蛋白(HGB) 148g/L（参考值120-170）\n血小板(PLT) 248×10^9/L（参考值100-300）\n\n【CRP】\nC反应蛋白 92mg/L ↑↑（参考值<10）\n\n【结论】\n白细胞及中性粒细胞明显增高，提示急性细菌感染；C反应蛋白显著升高，符合化脓性炎症表现。',
+    imageUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600&h=800&fit=crop',
+    starred: false,
+    cost: 60,
+    createdAt: '2010-05-12T08:30:00Z',
+    visitId: 'V_20100512_01',
+  },
+
+  // ========== 就诊2：2012-08-23 西京医院 消化内科 急性细菌性肠炎（1项） ==========
   {
     id: '2',
     member: '李明',
@@ -39,7 +61,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 350,
     createdAt: '2012-08-23T14:00:00Z',
+    visitId: 'V_20120823_01',
   },
+
+  // ========== 就诊3：2014-03-17 珠海市人民医院 呼吸内科 过敏性鼻炎（2项） ==========
   {
     id: '3',
     member: '李明',
@@ -54,7 +79,26 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 180,
     createdAt: '2014-03-17T09:00:00Z',
+    visitId: 'V_20140317_01',
   },
+  {
+    id: '3_ext',
+    member: '李明',
+    type: '检验结果',
+    diagnosis: '血清特异性IgE检测',
+    hospital: '珠海市人民医院',
+    city: '广东珠海',
+    date: '2014-03-17',
+    department: '呼吸内科',
+    notes: '【血清总IgE】\n358 IU/mL ↑（参考值<100）\n\n【特异性IgE检测】\n尘螨：+++（3级）\n花粉：++（2级）\n猫毛：+（1级）\n霉菌：-（0级）\n蟑螂：-（0级）\n\n【临床意义】\n总IgE及尘螨、花粉特异性IgE显著升高，符合过敏性鼻炎诊断。\n尘螨为主要致敏原，建议进行环境控制及脱敏治疗。',
+    imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&h=800&fit=crop',
+    starred: false,
+    cost: 280,
+    createdAt: '2014-03-17T10:30:00Z',
+    visitId: 'V_20140317_01',
+  },
+
+  // ========== 就诊4：2016-11-05 中山大学附一 骨科 腰椎间盘突出症（1项） ==========
   {
     id: '4',
     member: '李明',
@@ -69,7 +113,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: true,
     cost: 1200,
     createdAt: '2016-11-05T15:00:00Z',
+    visitId: 'V_20161105_01',
   },
+
+  // ========== 就诊5：2017-03-15 北京协和 呼吸内科 上呼吸道感染（1项） ==========
   {
     id: '5',
     member: '李明',
@@ -84,7 +131,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 280,
     createdAt: '2017-03-15T11:00:00Z',
+    visitId: 'V_20170315_01',
   },
+
+  // ========== 就诊6：2017-11-22 珠海市人民医院 呼吸内科 急性化脓性扁桃体炎（1项） ==========
   {
     id: '6',
     member: '李明',
@@ -99,7 +149,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 320,
     createdAt: '2017-11-22T09:30:00Z',
+    visitId: 'V_20171122_01',
   },
+
+  // ========== 就诊7：2018-06-14 珠海市人民医院 皮肤科 急性荨麻疹（1项） ==========
   {
     id: '7',
     member: '李明',
@@ -114,7 +167,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 220,
     createdAt: '2018-06-14T10:30:00Z',
+    visitId: 'V_20180614_01',
   },
+
+  // ========== 就诊8：2019-02-28 中山大学附一 消化内科 高脂血症（1项） ==========
   {
     id: '8',
     member: '李明',
@@ -129,7 +185,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 380,
     createdAt: '2019-02-28T08:30:00Z',
+    visitId: 'V_20190228_01',
   },
+
+  // ========== 就诊9：2019-05-20 珠海市人民医院 呼吸内科 急性支气管炎（2项） ==========
   {
     id: '100',
     member: '李明',
@@ -144,7 +203,26 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 260,
     createdAt: '2019-05-20T10:00:00Z',
+    visitId: 'V_20190520_01',
   },
+  {
+    id: '100_ext',
+    member: '李明',
+    type: '检查报告',
+    diagnosis: '胸部X线片：右下肺纹理增粗',
+    hospital: '珠海市人民医院',
+    city: '广东珠海',
+    date: '2019-05-20',
+    department: '呼吸内科',
+    notes: '【影像所见】\n胸部后前位片：\n双肺纹理增多、增粗，以右下肺为著，可见沿支气管分布的小点片状模糊阴影，肺门影稍浓。\n心影大小形态正常，主动脉结不宽。\n双侧膈面光滑，肋膈角锐利。\n纵隔居中，无增宽。\n\n【影像诊断】\n符合支气管炎改变，右下肺为著。\n\n【建议】\n1. 抗炎治疗后1-2周复查\n2. 注意休息，避免受凉',
+    imageUrl: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600&h=800&fit=crop',
+    starred: false,
+    cost: 120,
+    createdAt: '2019-05-20T11:30:00Z',
+    visitId: 'V_20190520_01',
+  },
+
+  // ========== 就诊10：2019-08-15 中山大学附一 影像科 肺炎复查（1项） ==========
   {
     id: '101',
     member: '李明',
@@ -159,7 +237,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 680,
     createdAt: '2019-08-15T14:00:00Z',
+    visitId: 'V_20190815_01',
   },
+
+  // ========== 就诊11：2020-05-18 西京医院 消化内科 慢性胃炎（2项） ==========
   {
     id: '9',
     member: '李明',
@@ -174,7 +255,26 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 850,
     createdAt: '2020-05-18T14:30:00Z',
+    visitId: 'V_20200518_01',
   },
+  {
+    id: '9_ext',
+    member: '李明',
+    type: '检验结果',
+    diagnosis: '13C尿素呼气试验：幽门螺旋杆菌阳性',
+    hospital: '空军军医大学西京医院',
+    city: '陕西西安',
+    date: '2020-05-18',
+    department: '消化内科',
+    notes: '【13C尿素呼气试验】\n检测前：DOB = 3.8‰\n检测后（30分钟）：DOB = 26.4‰\n\n【结果判断】\nDOB值 > 4‰ 为阳性\n本结果：26.4‰ ↑↑ 阳性(+++)\n\n【临床建议】\n幽门螺旋杆菌感染诊断明确。\n建议进行规范的四联疗法根除治疗。\n注意事项：\n1. 检测前4周未使用质子泵抑制剂、抗生素及铋剂\n2. 检测当日空腹或禁食2小时以上\n3. 吸烟、饮酒可能影响检测结果',
+    imageUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600&h=800&fit=crop',
+    starred: false,
+    cost: 150,
+    createdAt: '2020-05-18T10:00:00Z',
+    visitId: 'V_20200518_01',
+  },
+
+  // ========== 就诊12：2021-03-10 珠海市人民医院 内分泌科 甲亢（1项） ==========
   {
     id: '10',
     member: '李明',
@@ -189,7 +289,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 420,
     createdAt: '2021-03-10T10:00:00Z',
+    visitId: 'V_20210310_01',
   },
+
+  // ========== 就诊13：2022-07-21 中山大学附一 口腔科 智齿冠周炎（1项） ==========
   {
     id: '11',
     member: '李明',
@@ -204,7 +307,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 320,
     createdAt: '2022-07-21T16:00:00Z',
+    visitId: 'V_20220721_01',
   },
+
+  // ========== 就诊14：2023-01-15 珠海市人民医院 呼吸内科 细菌性上呼吸道感染（1项） ==========
   {
     id: '12',
     member: '李明',
@@ -219,7 +325,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 360,
     createdAt: '2023-01-15T09:30:00Z',
+    visitId: 'V_20230115_01',
   },
+
+  // ========== 就诊15：2023-09-08 珠海市人民医院 呼吸内科 急性咽炎（1项） ==========
   {
     id: '13',
     member: '李明',
@@ -234,7 +343,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 180,
     createdAt: '2023-09-08T10:00:00Z',
+    visitId: 'V_20230908_01',
   },
+
+  // ========== 就诊16：2024-04-12 中山大学附一 消化内科 脂肪肝（2项） ==========
   {
     id: '14',
     member: '李明',
@@ -249,7 +361,26 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 520,
     createdAt: '2024-04-12T11:00:00Z',
+    visitId: 'V_20240412_01',
   },
+  {
+    id: '14_ext',
+    member: '李明',
+    type: '检验结果',
+    diagnosis: '肝功能+血脂检查',
+    hospital: '中山大学附属第一医院',
+    city: '广东广州',
+    date: '2024-04-12',
+    department: '消化内科',
+    notes: '【肝功能】\n谷丙转氨酶(ALT) 58U/L ↑（参考值9-50）\n谷草转氨酶(AST) 45U/L ↑（参考值15-40）\nγ-谷氨酰转肽酶(GGT) 72U/L ↑（参考值10-60）\n碱性磷酸酶(ALP) 82U/L（参考值45-125）\n总胆红素(TBIL) 16.8μmol/L（参考值5.1-19）\n白蛋白(ALB) 45g/L（参考值35-55）\n\n【血脂】\n总胆固醇(TC) 5.8mmol/L ↑（参考值<5.18）\n甘油三酯(TG) 2.3mmol/L ↑（参考值<1.7）\n低密度脂蛋白(LDL-C) 3.9mmol/L ↑（参考值<3.37）\n高密度脂蛋白(HDL-C) 0.9mmol/L ↓（参考值>1.0）\n\n【血糖】\n空腹血糖(FPG) 5.8mmol/L（参考值3.9-6.1）\n\n【结论】\n肝功能轻度异常（ALT、AST、GGT升高），与脂肪肝有关。\n血脂偏高（高胆固醇、高甘油三酯、低HDL），建议饮食+运动干预。\n建议6个月后复查，必要时加用药物治疗。',
+    imageUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600&h=800&fit=crop',
+    starred: false,
+    cost: 180,
+    createdAt: '2024-04-12T09:00:00Z',
+    visitId: 'V_20240412_01',
+  },
+
+  // ========== 就诊17：2025-02-20 珠海市人民医院 消化内科 Hp感染（1项） ==========
   {
     id: '15',
     member: '李明',
@@ -264,7 +395,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 280,
     createdAt: '2025-02-20T10:30:00Z',
+    visitId: 'V_20250220_01',
   },
+
+  // ========== 就诊18：2025-06-15 珠海市人民医院 消化内科 慢性胃炎（1项） ==========
   {
     id: '102',
     member: '李明',
@@ -279,7 +413,10 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 340,
     createdAt: '2025-06-15T09:00:00Z',
+    visitId: 'V_20250615_01',
   },
+
+  // ========== 就诊19：2025-10-25 中山大学附一 体检中心 年度体检（2项） ==========
   {
     id: '103',
     member: '李明',
@@ -288,28 +425,82 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     hospital: '中山大学附属第一医院',
     city: '广东广州',
     date: '2025-10-25',
-    department: '检验科',
+    department: '体检中心',
     notes: '检验项目：血常规、肝肾功能、血脂、血糖\n\n【血常规】\n白细胞(WBC) 6.8×10^9/L 参考值：4-10\n红细胞(RBC) 5.2×10^12/L 参考值：4-5.5\n血红蛋白(HGB) 152g/L 参考值：120-170\n血小板(PLT) 218×10^9/L 参考值：100-300\n中性粒细胞比率(NEUT%) 62.5% 参考值：50-70\n\n【肝功能】\n谷丙转氨酶(ALT) 35U/L 参考值：9-50\n谷草转氨酶(AST) 32U/L 参考值：15-40\nγ-谷氨酰转肽酶(GGT) 48U/L 参考值：10-60\n碱性磷酸酶(ALP) 78U/L 参考值：45-125\n总胆红素(TBIL) 14.2μmol/L 参考值：5.1-19\n\n【肾功能】\n尿素氮(BUN) 5.8mmol/L 参考值：2.6-7.5\n肌酐(Cr) 82μmol/L 参考值：44-133\n尿酸(UA) 398μmol/L 参考值：208-428\n\n【血脂】\n总胆固醇(TC) 5.6mmol/L 参考值：<5.18\n甘油三酯(TG) 1.9mmol/L 参考值：<1.7↑\n低密度脂蛋白(LDL-C) 3.8mmol/L 参考值：<3.37\n\n【血糖】\n空腹血糖(FPG) 5.2mmol/L 参考值：3.9-6.1\n\n结论：\n体检各项指标基本正常，血脂偏高，建议低脂饮食，定期复查。',
     imageUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600&h=800&fit=crop',
     starred: false,
     cost: 180,
     createdAt: '2025-10-25T08:00:00Z',
+    visitId: 'V_20251025_01',
   },
+  {
+    id: '103_ext',
+    member: '李明',
+    type: '检查报告',
+    diagnosis: '腹部B超+心电图',
+    hospital: '中山大学附属第一医院',
+    city: '广东广州',
+    date: '2025-10-25',
+    department: '体检中心',
+    notes: '【腹部B超】\n肝脏：大小形态正常，包膜光滑，肝实质回声稍增强，肝内管道结构清晰，门静脉内径正常。\n胆囊：大小正常，壁光滑，腔内未见异常回声。\n脾脏：大小正常，回声均匀。\n胰腺：大小形态正常，实质回声均匀，胰管无扩张。\n双肾：大小形态正常，皮髓质结构清晰，未见结石及占位。\n\n【心电图】\n心率：78次/分\n节律：窦性心律\nP波：正常\nPR间期：156ms（正常120-200ms）\nQRS波群：形态正常，时限88ms\nST-T段：未见明显异常\n诊断：窦性心律，正常心电图\n\n【体检小结】\n1. 肝实质回声稍增强（轻度脂肪肝可能）\n2. 心电图正常\n3. 其余未见明显异常\n\n建议：\n继续保持健康生活方式，适度运动，控制体重，次年复查。',
+    imageUrl: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600&h=800&fit=crop',
+    starred: false,
+    cost: 280,
+    createdAt: '2025-10-25T10:30:00Z',
+    visitId: 'V_20251025_01',
+  },
+
+  // ========== 就诊20：2026-01-15 珠海市人民医院 呼吸内科 右下肺炎（3项） ==========
   {
     id: '16',
     member: '李明',
-    type: '检查报告',
+    type: '病历',
     diagnosis: '右下肺炎',
     hospital: '珠海市人民医院',
     city: '广东珠海',
     date: '2026-01-15',
     department: '呼吸内科',
     notes: '主诉：发热、咳嗽咳痰10天，加重伴胸痛3天。现病史：患者10天前受凉后出现发热，体温38.2℃，伴咳嗽，咳黄脓痰，量约30ml/日，无咯血胸痛，自服头孢类抗生素及止咳药症状无明显好转。3天前咳嗽加重，痰量增多，呈铁锈色，伴右下胸刺痛，深呼吸及咳嗽时加重，伴气促，活动后明显。无恶心呕吐，无腹痛腹泻。查体：T 38.8℃，P 98次/分，R 22次/分，BP 118/76mmHg。神志清楚，急性病容，呼吸稍促。右下肺呼吸动度减弱，叩诊浊音，听诊呼吸音减低，可闻及中小水泡音及胸膜摩擦音。左肺呼吸音粗，未闻及干湿啰音。心律齐。辅助检查：血常规：WBC 14.5×10^9/L↑，N 88%↑，CRP 98mg/L↑↑；动脉血气分析：PaO2 68mmHg↓；胸片：右下肺大片实变影，可见支气管充气征。诊断：右下肺炎（大叶性肺炎？）。治疗：1. 莫西沙星 0.4g qd 静滴×7天；2. 头孢曲松 2.0g qd 静滴×7天；3. 氨溴索 30mg tid 静注；4. 吸氧，卧床休息；5. 复查血常规、胸片。',
-    imageUrl: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600&h=800&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=600&h=800&fit=crop',
     starred: true,
-    cost: 1200,
+    cost: 500,
     createdAt: '2026-01-15T11:00:00Z',
+    visitId: 'V_20260115_01',
   },
+  {
+    id: '16_ext1',
+    member: '李明',
+    type: '检验结果',
+    diagnosis: '血常规+CRP+降钙素原',
+    hospital: '珠海市人民医院',
+    city: '广东珠海',
+    date: '2026-01-15',
+    department: '呼吸内科',
+    notes: '【血常规】\n白细胞(WBC) 14.5×10^9/L ↑（参考值4-10）\n中性粒细胞(NEUT%) 88% ↑（参考值50-70）\n淋巴细胞(LYM%) 8% ↓（参考值20-40）\n血红蛋白(HGB) 142g/L（参考值120-170）\n血小板(PLT) 328×10^9/L ↑（参考值100-300）\n\n【炎症指标】\nC反应蛋白(CRP) 98mg/L ↑↑（参考值<10）\n降钙素原(PCT) 2.8ng/mL ↑（参考值<0.5）\n血沉(ESR) 48mm/h ↑（参考值<20）\n\n【血气分析】\npH 7.42（参考值7.35-7.45）\nPaO2 68mmHg ↓（参考值>95）\nPaCO2 36mmHg（参考值35-45）\nSaO2 93% ↓（参考值>95）\n\n【结论】\n白细胞及中性粒细胞显著升高，PCT、CRP明显增高，提示严重细菌感染。\n轻度低氧血症，需吸氧及抗感染治疗。',
+    imageUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600&h=800&fit=crop',
+    starred: false,
+    cost: 280,
+    createdAt: '2026-01-15T08:30:00Z',
+    visitId: 'V_20260115_01',
+  },
+  {
+    id: '16_ext2',
+    member: '李明',
+    type: '检查报告',
+    diagnosis: '胸部CT：右下肺大叶性肺炎',
+    hospital: '珠海市人民医院',
+    city: '广东珠海',
+    date: '2026-01-15',
+    department: '呼吸内科',
+    notes: '【CT所见】\n胸部CT平扫：\n右肺下叶可见大片状高密度实变影，范围约6.5cm×4.8cm，密度均匀，边缘模糊，内可见支气管充气征，累及右下叶后基底段及背段。\n病变区胸膜轻度增厚，可见少量胸腔积液。\n纵隔内未见明显肿大淋巴结。\n左肺各叶未见异常密度影。\n心影大小形态正常。\n\n【CT诊断】\n右下肺大叶性肺炎，伴少量胸腔积液。\n\n【建议】\n1. 规范抗感染治疗7-10天\n2. 治疗后2周复查胸部CT评估疗效\n3. 如症状加重或持续发热，需警惕并发症',
+    imageUrl: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600&h=800&fit=crop',
+    starred: false,
+    cost: 680,
+    createdAt: '2026-01-15T14:00:00Z',
+    visitId: 'V_20260115_01',
+  },
+
+  // ========== 就诊21：2026-03-20 珠海市人民医院 呼吸内科 支原体支气管炎（2项） ==========
   {
     id: '17',
     member: '李明',
@@ -324,7 +515,26 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 450,
     createdAt: '2026-03-20T08:30:00Z',
+    visitId: 'V_20260320_01',
   },
+  {
+    id: '17_ext',
+    member: '李明',
+    type: '检查报告',
+    diagnosis: '胸片：双肺纹理增粗',
+    hospital: '珠海市人民医院',
+    city: '广东珠海',
+    date: '2026-03-20',
+    department: '呼吸内科',
+    notes: '【影像所见】\n胸部后前位片：\n双肺纹理增多、增粗、模糊，以左下肺为著，可见沿支气管分布的网格状及小点片状阴影。\n肺门影稍增浓，结构清晰。\n心影大小形态正常。\n双侧膈面光滑，肋膈角锐利。\n纵隔居中无增宽。\n\n【影像诊断】\n双肺纹理增粗模糊，符合支气管肺炎改变（支原体感染可能）。\n\n【建议】\n1. 针对性抗感染治疗（大环内酯类）\n2. 2周后复查胸片\n3. 注意休息，加强营养',
+    imageUrl: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600&h=800&fit=crop',
+    starred: false,
+    cost: 120,
+    createdAt: '2026-03-20T10:00:00Z',
+    visitId: 'V_20260320_01',
+  },
+
+  // ========== 就诊22：2026-05-25 珠海市人民医院 呼吸内科 病毒性咽炎（1项） ==========
   {
     id: '18',
     member: '李明',
@@ -339,6 +549,7 @@ export const INITIAL_RECORDS: HealthRecord[] = [
     starred: false,
     cost: 180,
     createdAt: '2026-05-25T10:00:00Z',
+    visitId: 'V_20260525_01',
   },
 ];
 
@@ -359,3 +570,29 @@ export const STAT_TIME_RANGES = [
   '2020-2025年',
   '2010-2019年',
 ];
+
+// 工具函数：获取某次就诊的所有记录
+export const getRecordsByVisitId = (records: HealthRecord[], visitId: string): HealthRecord[] => {
+  return records.filter(r => r.visitId === visitId);
+};
+
+// 工具函数：根据记录分组为就诊（用于档案页按就诊显示）
+export const groupRecordsByVisit = (records: HealthRecord[]): { visitId: string; records: HealthRecord[]; date: string; hospital: string; mainDiagnosis: string; totalCost: number; }[] => {
+  const visitMap = new Map<string, HealthRecord[]>();
+  records.forEach(r => {
+    if (!visitMap.has(r.visitId)) {
+      visitMap.set(r.visitId, []);
+    }
+    visitMap.get(r.visitId)!.push(r);
+  });
+  return Array.from(visitMap.entries())
+    .map(([visitId, recs]) => ({
+      visitId,
+      records: recs,
+      date: recs[0].date,
+      hospital: recs[0].hospital,
+      mainDiagnosis: recs.find(r => r.type === '病历')?.diagnosis || recs[0].diagnosis,
+      totalCost: recs.reduce((sum, r) => sum + r.cost, 0),
+    }))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+};

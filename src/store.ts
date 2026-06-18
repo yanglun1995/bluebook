@@ -107,6 +107,7 @@ interface AppState {
   clearAppLockPassword: () => void;
   verifyAppLockPassword: (password: string) => boolean;
   getFilteredRecords: () => HealthRecord[];
+  getRecordsByVisit: (visitId: string) => HealthRecord[];
   addFamilyMember: (name: string, relationship?: string) => void;
   deleteFamilyMember: (id: string) => void;
   login: () => void;
@@ -273,5 +274,10 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       return matchesMember && matchesType && matchesSearch && matchesTime;
     });
+  },
+
+  getRecordsByVisit: (visitId: string) => {
+    const { records } = get();
+    return records.filter(r => r.visitId === visitId);
   },
 }));
